@@ -2,31 +2,32 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    [SerializeField] private float moveSpeed = 5f;
-    [SerializeField] private float rotationSpeed = 10f;
-    
-    private Animator animator;
-    private CharacterController controller;
-    
-    private void Start()
+  [SerializeField] private float moveSpeed = 5f;
+  
+  private PlayerControls controls; 
+  private Vector2 moveInput;
+
+  private void Awake() 
+  {
+    controls = new PlayerControls();  
+  }
+
+ private void OnEnable() 
+ {
+    controls.Player.Move.performed += ctx => moveInput = ctx.ReadValue<Vector2>();
+    controls.Player.Move.canceled += ctx => moveInput = Vector2.zero;
+    controls.Enable();
+ }
+
+ private void OnDisable() 
+ {
+    controls.Disable();   
+ }
+
+ private void Update()
     {
-        animator = GetComponent<Animator>();
-        controller = GetComponent<CharacterController>();
+        Vector3 move = new Vector3(moveInput.x, 0f, moveInput.y) * moveSpeed * Time.deltaTime;
+        transform.Translate(move, Space.World);
     }
-    
-    private void Update()
-    {
-        HandleMovement();
-        HandleAttack();
-    }
-    
-    private void HandleMovement()
-    {
-        // Movement code
-    }
-    
-    private void HandleAttack()
-    {
-        // Attack logic
-    }
+
 }
